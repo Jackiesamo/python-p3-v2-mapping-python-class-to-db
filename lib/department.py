@@ -1,3 +1,4 @@
+
 from __init__ import CURSOR, CONN
 
 
@@ -10,3 +11,47 @@ class Department:
 
     def __repr__(self):
         return f"<Department {self.id}: {self.name}, {self.location}>"
+
+    # -----------------------------
+    # CREATE TABLE
+    # -----------------------------
+    @classmethod
+    def create_table(cls):
+        sql = """
+        CREATE TABLE IF NOT EXISTS departments (
+            id INTEGER PRIMARY KEY,
+            name TEXT,
+            location TEXT
+        );
+        """
+        CURSOR.execute(sql)
+        CONN.commit()
+
+    # -----------------------------
+    # DROP TABLE
+    # -----------------------------
+    @classmethod
+    def drop_table(cls):
+        sql = """
+        DROP TABLE IF EXISTS departments;
+        """
+        CURSOR.execute(sql)
+        CONN.commit()
+
+    # -----------------------------
+    # SAVE (INSERT ROW)
+    # -----------------------------
+    def save(self):
+        sql = """
+        INSERT INTO departments (name, location)
+        VALUES (?, ?);
+        """
+        CURSOR.execute(sql, (self.name, self.location))
+        CONN.commit()
+        self.id = CURSOR.lastrowid
+
+        @classmethod
+        def create(cls,name,location):
+            department = cls(name,location)
+            department.save()
+            
